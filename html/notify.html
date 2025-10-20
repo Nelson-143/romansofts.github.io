@@ -1,195 +1,210 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Notification</title>
-    <style>
-        /* Page basics */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: auto; /* allow normal scrolling */
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            -webkit-font-smoothing:antialiased;
-            -moz-osx-font-smoothing:grayscale;
-            background: linear-gradient(180deg, #0f172a 0%, #071129 55%, #02111a 100%);
-            color: #e6eef8;
-        }
+<style>
+    /* Card / notice wrapper */
+    .notice-wrapper {
+        width: 100%;
+        border-radius: 14px;
+        padding: 18px;
+        position: relative;
+        box-sizing: border-box;
+        background: #ffffff;
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 6px 20px rgba(16,24,40,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+        display: grid;
+        grid-template-columns: 72px 1fr;
+        gap: 16px;
+        align-items: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+    }
 
-        /* Stage pinned to top (not centered vertically) */
-        .stage {
-            min-height: 100vh;
-            display: flex;
-            align-items: flex-start; /* moved to top */
-            justify-content: center;
-            padding: 20px 20px 0 20px; /* top spacing */
-            box-sizing: border-box;
-        }
+    /* Accent stripe / icon column - default (motivation) bright light-green */
+    .accent {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        border-radius: 12px;
+        flex-shrink: 0;
+        font-size: 28px;
+        color: #083109;
+        background: linear-gradient(135deg, #baf7c6 0%, #7ef08b 100%);
+        box-shadow: 0 6px 18px rgba(126,240,139,0.12), inset 0 -6px 18px rgba(255,255,255,0.02);
+    }
 
-        /* Card / notice wrapper */
+    /* Main box content */
+    .notice-box {
+        padding: 6px 6px 6px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .notice-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 1.05;
+        color: #06260b;
+    }
+
+    .notice-message {
+        color: rgba(5,34,12,0.95);
+        font-size: 14px;
+        line-height: 1.45;
+        margin-bottom: 4px;
+    }
+
+    .notice-footer {
+        color: rgba(20,60,30,0.7);
+        font-size: 13px;
+        font-style: italic;
+    }
+
+    /* Reminder (payrun) variant - bright light-red/pink */
+    .notice-wrapper.reminder .accent {
+        background: linear-gradient(135deg,#ffd7d7 0%,#ff9b9b 100%);
+        box-shadow: 0 6px 18px rgba(255,155,155,0.12);
+        color: #5a0303;
+    }
+    .notice-wrapper.reminder {
+        border-left: 6px solid rgba(255,120,120,0.18);
+    }
+
+    /* subtle accent footer divider */
+    .notice-footer::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 8px;
+        vertical-align: middle;
+        background: linear-gradient(135deg,#9fb7ff,#aaf6d6);
+        border-radius: 50%;
+        opacity: 0.9;
+    }
+
+    /* Responsive single-column on very narrow screens */
+    @media (max-width:420px){
         .notice-wrapper {
-            width: min(680px, calc(100% - 40px));
-            border-radius: 14px;
-            padding: 18px;
-            position: relative;
-            box-sizing: border-box;
-            background: #ffffff; /* white background */
-            border: 1px solid rgba(0,0,0,0.06);
-            box-shadow:
-                0 6px 20px rgba(16,24,40,0.08),
-                inset 0 1px 0 rgba(255,255,255,0.6);
-            backdrop-filter: none;
-            transform-origin: center;
-            animation: floatIn 420ms cubic-bezier(.22,.9,.28,1);
-            display: grid;
-            grid-template-columns: 72px 1fr;
-            gap: 16px;
-            align-items: center;
-        }
-
-        /* Accent stripe / icon column - default (motivation) bright light-green */
-        .accent {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 72px;
-            height: 72px;
+            grid-template-columns: 56px 1fr;
+            gap: 12px;
+            padding: 14px;
             border-radius: 12px;
-            flex-shrink: 0;
-            font-size: 28px;
-            color: #083109;
-            background: linear-gradient(135deg, #baf7c6 0%, #7ef08b 100%);
-            box-shadow: 0 6px 18px rgba(126,240,139,0.12), inset 0 -6px 18px rgba(255,255,255,0.02);
         }
-
-        /* Main box content */
-        .notice-box {
-            padding: 6px 6px 6px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .accent { 
+            width:56px; 
+            height:56px; 
+            font-size:22px; 
+            border-radius:10px; 
         }
-
         .notice-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: clamp(16px, 2.2vw, 20px);
-            line-height: 1.05;
-            color: #06260b;
+            font-size: 16px;
         }
-
         .notice-message {
-            color: rgba(5,34,12,0.95);
-            font-size: clamp(13px, 1.9vw, 15px);
-            line-height: 1.45;
-            margin-bottom: 4px;
-        }
-
-        .notice-footer {
-            color: rgba(20,60,30,0.7);
             font-size: 13px;
-            font-style: italic;
         }
+    }
+</style>
 
-        /* Reminder (payrun) variant - bright light-red/pink */
-        .notice-wrapper.reminder .accent {
-            background: linear-gradient(135deg,#ffd7d7 0%,#ff9b9b 100%);
-            box-shadow: 0 6px 18px rgba(255,155,155,0.12);
-            color: #5a0303;
-        }
-        .notice-wrapper.reminder {
-            border-left: 6px solid rgba(255,120,120,0.18);
-        }
+<div class="notice-wrapper" id="noticeWrapper">
+    <div class="accent" id="accentIcon">🌟</div>
 
-        /* subtle accent footer divider */
-        .notice-footer::before {
-            content: "";
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            margin-right: 8px;
-            vertical-align: middle;
-            background: linear-gradient(135deg,#9fb7ff,#aaf6d6);
-            border-radius: 50%;
-            opacity: 0.9;
-        }
-
-        @keyframes floatIn {
-            from { transform: translateY(18px) scale(.995); opacity: 0; }
-            to   { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
-        /* Responsive single-column on very narrow screens */
-        @media (max-width:420px){
-            .notice-wrapper {
-                grid-template-columns: 56px 1fr;
-                gap: 12px;
-                padding: 14px;
-                border-radius: 12px;
-            }
-            .accent { width:56px; height:56px; font-size:22px; border-radius:10px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="stage" role="region" aria-label="Notification">
-        <div class="notice-wrapper" id="noticeWrapper" aria-live="polite">
-            <div class="accent" id="accentIcon" aria-hidden="true">🌟</div>
-
-            <div class="notice-box" id="noticeBox">
-                <div class="notice-title" id="noticeTitle"></div>
-                <div class="notice-message" id="noticeMessage"></div>
-                <div class="notice-footer" id="noticeFooter"></div>
-            </div>
-        </div>
+    <div class="notice-box" id="noticeBox">
+        <div class="notice-title" id="noticeTitle"></div>
+        <div class="notice-message" id="noticeMessage"></div>
+        <div class="notice-footer" id="noticeFooter"></div>
     </div>
+</div>
 
-    <script>
-        (function(){
-            // CONFIG
-            const REMINDER_DAY = 29; // set company's reminder date
-            const today = new Date();
-            const currentDay = today.getDate();
+<script type="text/javascript">
+(function(){
+    // CONFIG
+    var REMINDER_DAY = 28; // set company's reminder date
+    var today = new Date();
+    var currentDay = today.getDate();
 
-            // Quotes
-            const quotes = [
-                "Keep going — every small step builds momentum!",
-                "Dream big, work hard, stay focused.",
-                "Success is the sum of small efforts repeated daily.",
-                "Your work today plants the seed for tomorrow's success.",
-                "Discipline beats motivation every time.",
-                "Believe in the process — progress takes time.",
-                "Great things never come from comfort zones."
-            ];
+    // Quotes - expanded collection
+    var quotes = [
+        "Keep going — every small step builds momentum!",
+        "Dream big, work hard, stay focused.",
+        "Success is the sum of small efforts repeated daily.",
+        "Your work today plants the seed for tomorrow's success.",
+        "Discipline beats motivation every time.",
+        "Believe in the process — progress takes time.",
+        "Great things never come from comfort zones.",
+        "The harder you work, the luckier you get.",
+        "Excellence is not a destination, it's a continuous journey.",
+        "Your limitation—it's only your imagination.",
+        "Push yourself, because no one else is going to do it for you.",
+        "Sometimes later becomes never. Do it now.",
+        "The key to success is to start before you're ready.",
+        "Don't stop when you're tired. Stop when you're done.",
+        "Wake up with determination. Go to bed with satisfaction.",
+        "Do something today that your future self will thank you for.",
+        "Little things make big days. Big days make great years.",
+        "It's going to be hard, but hard does not mean impossible.",
+        "Don't wait for opportunity. Create it.",
+        "Success doesn't just find you. You have to go out and get it.",
+        "The difference between ordinary and extraordinary is that little extra.",
+        "Quality is not an act, it is a habit.",
+        "Stay patient and trust the journey.",
+        "Your only limit is you.",
+        "Make today so awesome that yesterday gets jealous.",
+        "Focus on being productive instead of busy.",
+        "Opportunities don't happen. You create them.",
+        "You don't have to be great to start, but you have to start to be great.",
+        "Work hard in silence, let success make the noise.",
+        "Strive for progress, not perfection."
+    ];
 
-            // Elements
-            const wrapper = document.getElementById("noticeWrapper");
-            const title = document.getElementById("noticeTitle");
-            const msg = document.getElementById("noticeMessage");
-            const footer = document.getElementById("noticeFooter");
-            const accent = document.getElementById("accentIcon");
+    // Wait for DOM to be ready
+    function initNotice() {
+        var wrapper = document.getElementById("noticeWrapper");
+        var title = document.getElementById("noticeTitle");
+        var msg = document.getElementById("noticeMessage");
+        var footer = document.getElementById("noticeFooter");
+        var accent = document.getElementById("accentIcon");
 
-            // State: reminder or motivation (persistent, not dismissible)
-            if (currentDay === REMINDER_DAY) {
-                wrapper.classList.add("reminder");
-                accent.textContent = "⚠️";
-                title.textContent = "Payrun Reminder";
-                msg.textContent = `Today is the ${REMINDER_DAY}th — please run this month's payrun to keep payroll up to date and avoid delays.`;
-                footer.textContent = "— Payroll Reminder";
-            } else {
-                accent.textContent = "🌟";
-                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-                title.textContent = "Daily Motivation";
-                msg.textContent = randomQuote;
-                footer.textContent = "— Stay inspired and productive!";
+        if (!wrapper || !title || !msg || !footer || !accent) {
+            setTimeout(initNotice, 50);
+            return;
+        }
+
+        // State: reminder or motivation
+        if (currentDay === REMINDER_DAY) {
+            wrapper.className = "notice-wrapper reminder";
+            accent.innerHTML = "&#9888;&#65039;";
+            title.innerHTML = "Payrun Reminder";
+            msg.innerHTML = "Today is the " + REMINDER_DAY + "th — please run this month's payrun to keep payroll up to date and avoid delays.";
+            footer.innerHTML = "— Payroll Reminder";
+        } else {
+            // Motivation mode with auto-rotation
+            wrapper.className = "notice-wrapper";
+            accent.innerHTML = "&#127775;";
+            
+            function updateQuote() {
+                var randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                title.innerHTML = "Daily Motivation";
+                msg.innerHTML = randomQuote;
+                footer.innerHTML = "— Stay inspired and productive!";
             }
+            
+            // Show first quote immediately
+            updateQuote();
+            
+            // Auto-change quote every 10 seconds
+            setInterval(updateQuote, 10000);
+        }
+    }
 
-            // Notification is persistent by design; no close/dismiss handlers.
-        })();
-    </script>
-</body>
-</html>
+    // Start initialization
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initNotice);
+    } else {
+        initNotice();
+    }
+})();
+</script>
