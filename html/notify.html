@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Notification</title>
+    <style>
+        /* Prevent scrolling and make the viewport a centered stage */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* no scrollbars */
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            background: linear-gradient(180deg, #0f172a 0%, #071129 55%, #02111a 100%);
+            color: #e6eef8;
+        }
+
+        /* Stage centering */
+        .stage {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Card / notice wrapper */
+        .notice-wrapper {
+            width: min(680px, calc(100% - 40px));
+            border-radius: 14px;
+            padding: 18px;
+            position: relative;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow:
+                0 10px 30px rgba(2,6,23,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.02);
+            backdrop-filter: blur(8px) saturate(120%);
+            transform-origin: center;
+            animation: floatIn 420ms cubic-bezier(.22,.9,.28,1);
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* Accent stripe / icon column */
+        .accent {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            font-size: 28px;
+            color: white;
+            background: linear-gradient(135deg, #3ddc84, #0ea5a3);
+            box-shadow: 0 6px 18px rgba(14,165,163,0.12), inset 0 -6px 18px rgba(255,255,255,0.02);
+        }
+
+        /* Main box content */
+        .notice-box {
+            padding: 6px 6px 6px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .notice-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: clamp(16px, 2.2vw, 20px);
+            line-height: 1.05;
+            color: #f8fbff;
+        }
+
+        .notice-message {
+            color: rgba(235,245,255,0.95);
+            font-size: clamp(13px, 1.9vw, 15px);
+            line-height: 1.45;
+            margin-bottom: 4px;
+        }
+
+        .notice-footer {
+            color: rgba(210,225,240,0.7);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        /* Reminder variant */
+        .notice-wrapper.reminder .accent {
+            background: linear-gradient(135deg,#ff7a7a,#ff4f60);
+            box-shadow: 0 6px 18px rgba(255,79,96,0.12);
+        }
+        .notice-wrapper.reminder {
+            border-left: 6px solid rgba(255,79,96,0.18);
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            background: transparent;
+            border: none;
+            color: rgba(230,240,255,0.9);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 8px;
+            transition: background .15s ease, transform .12s ease;
+        }
+        .close-btn:hover { background: rgba(255,255,255,0.03); transform: translateY(-1px); }
+
+        /* subtle accent footer divider */
+        .notice-footer::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-right: 8px;
+            vertical-align: middle;
+            background: linear-gradient(135deg,#9fb7ff,#aaf6d6);
+            border-radius: 50%;
+            opacity: 0.9;
+        }
+
+        @keyframes floatIn {
+            from { transform: translateY(18px) scale(.995); opacity: 0; }
+            to   { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* Responsive single-column on very narrow screens */
+        @media (max-width:420px){
+            .notice-wrapper {
+                grid-template-columns: 56px 1fr;
+                gap: 12px;
+                padding: 14px;
+                border-radius: 12px;
+            }
+            .accent { width:56px; height:56px; font-size:22px; border-radius:10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stage" role="region" aria-label="Notification">
+        <div class="notice-wrapper" id="noticeWrapper" aria-live="polite">
+            <button class="close-btn" id="closeBtn" aria-label="Close notification">✕</button>
+
+            <div class="accent" id="accentIcon" aria-hidden="true">🌟</div>
+
+            <div class="notice-box" id="noticeBox">
+                <div class="notice-title" id="noticeTitle"></div>
+                <div class="notice-message" id="noticeMessage"></div>
+                <div class="notice-footer" id="noticeFooter"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            // CONFIG
+            const REMINDER_DAY = 20; // set company's reminder date
+            const today = new Date();
+            const currentDay = today.getDate();
+
+            // Quotes
+            const quotes = [
+                "Keep going — every small step builds momentum!",
+                "Dream big, work hard, stay focused.",
+                "Success is the sum of small efforts repeated daily.",
+                "Your work today plants the seed for tomorrow's success.",
+                "Discipline beats motivation every time.",
+                "Believe in the process — progress takes time.",
+                "Great things never come from comfort zones."
+            ];
+
+            // Elements
+            const wrapper = document.getElementById("noticeWrapper");
+            const box = document.getElementById("noticeBox");
+            const title = document.getElementById("noticeTitle");
+            const msg = document.getElementById("noticeMessage");
+            const footer = document.getElementById("noticeFooter");
+            const accent = document.getElementById("accentIcon");
+            const closeBtn = document.getElementById("closeBtn");
+
+            // State: reminder or motivation
+            if (currentDay === REMINDER_DAY) {
+                wrapper.classList.add("reminder");
+                accent.textContent = "⚠️";
+                title.textContent = "Payrun Reminder";
+                msg.textContent = `Today is the ${REMINDER_DAY}th — please run this month's payrun to keep payroll up to date and avoid delays.`;
+                footer.textContent = "— Payroll Reminder";
+            } else {
+                accent.textContent = "🌟";
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                title.textContent = "Daily Motivation";
+                msg.textContent = randomQuote;
+                footer.textContent = "— Stay inspired and productive!";
+            }
+
+            // Close action: remove the card (no scroll exists)
+            closeBtn.addEventListener("click", function(){
+                wrapper.style.transition = "transform .25s ease, opacity .25s ease";
+                wrapper.style.transform = "translateY(18px) scale(.98)";
+                wrapper.style.opacity = "0";
+                setTimeout(()=> {
+                    wrapper.remove();
+                }, 260);
+            });
+
+            // Optional: click outside to dismiss (works because body has no other content)
+            document.addEventListener("keydown", function(e){
+                if (e.key === "Escape") closeBtn.click();
+            });
+        })();
+    </script>
+</body>
+</html>
