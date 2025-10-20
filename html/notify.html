@@ -1,11 +1,23 @@
 <style>
-    /* Card / notice wrapper */
+    /* Reset for our components only */
+    .payroll-widget-container,
+    .payroll-widget-container * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .payroll-widget-container {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    /* === NOTIFICATION CARD (TOP) === */
     .notice-wrapper {
         width: 100%;
         border-radius: 14px;
         padding: 18px;
-        position: relative;
-        box-sizing: border-box;
         background: #ffffff;
         border: 1px solid rgba(0,0,0,0.06);
         box-shadow: 0 6px 20px rgba(16,24,40,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
@@ -13,11 +25,9 @@
         grid-template-columns: 72px 1fr;
         gap: 16px;
         align-items: center;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        margin: 0;
+        margin-bottom: 15px;
     }
 
-    /* Accent stripe / icon column - default (motivation) bright light-green */
     .accent {
         display: flex;
         align-items: center;
@@ -32,7 +42,6 @@
         box-shadow: 0 6px 18px rgba(126,240,139,0.12), inset 0 -6px 18px rgba(255,255,255,0.02);
     }
 
-    /* Main box content */
     .notice-box {
         padding: 6px 6px 6px 0;
         display: flex;
@@ -41,9 +50,6 @@
     }
 
     .notice-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
         font-weight: 700;
         font-size: 18px;
         line-height: 1.05;
@@ -63,7 +69,7 @@
         font-style: italic;
     }
 
-    /* Reminder (payrun) variant - bright light-red/pink */
+    /* Reminder variant */
     .notice-wrapper.reminder .accent {
         background: linear-gradient(135deg,#ffd7d7 0%,#ff9b9b 100%);
         box-shadow: 0 6px 18px rgba(255,155,155,0.12);
@@ -73,7 +79,6 @@
         border-left: 6px solid rgba(255,120,120,0.18);
     }
 
-    /* subtle accent footer divider */
     .notice-footer::before {
         content: "";
         display: inline-block;
@@ -86,43 +91,88 @@
         opacity: 0.9;
     }
 
-    /* Responsive single-column on very narrow screens */
-    @media (max-width:420px){
-        .notice-wrapper {
-            grid-template-columns: 56px 1fr;
-            gap: 12px;
-            padding: 14px;
-            border-radius: 12px;
-        }
-        .accent { 
-            width:56px; 
-            height:56px; 
-            font-size:22px; 
-            border-radius:10px; 
-        }
-        .notice-title {
-            font-size: 16px;
-        }
-        .notice-message {
-            font-size: 13px;
-        }
+    /* === WELCOME BANNER (BOTTOM) === */
+    .welcome-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+        color: white;
+        position: relative;
+        overflow: hidden;
+        min-height: 100px;
+    }
+
+    .decorative-circles {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        top: -40px;
+        right: -40px;
+        z-index: 0;
+    }
+
+    .banner-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .welcome-text {
+        font-size: 11px;
+        font-weight: 500;
+        opacity: 0.9;
+        margin-bottom: 4px;
+    }
+
+    .main-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        line-height: 1.2;
+    }
+
+    .subtitle {
+        font-size: 10px;
+        opacity: 0.85;
+        line-height: 1.3;
+    }
+
+    .date-time {
+        margin-top: 8px;
+        font-size: 9px;
+        opacity: 0.8;
     }
 </style>
 
-<div class="notice-wrapper" id="noticeWrapper">
-    <div class="accent" id="accentIcon">🌟</div>
+<div class="payroll-widget-container">
+    <!-- NOTIFICATION CARD -->
+    <div class="notice-wrapper" id="noticeWrapper">
+        <div class="accent" id="accentIcon">🌟</div>
+        <div class="notice-box">
+            <div class="notice-title" id="noticeTitle"></div>
+            <div class="notice-message" id="noticeMessage"></div>
+            <div class="notice-footer" id="noticeFooter"></div>
+        </div>
+    </div>
 
-    <div class="notice-box" id="noticeBox">
-        <div class="notice-title" id="noticeTitle"></div>
-        <div class="notice-message" id="noticeMessage"></div>
-        <div class="notice-footer" id="noticeFooter"></div>
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner">
+        <div class="decorative-circles"></div>
+        <div class="banner-content">
+            <div class="welcome-text">Ahhoi Pal, Welcome to</div>
+            <div class="main-title">Payroll Management</div>
+            <div class="subtitle">Manage payroll efficiently and securely</div>
+            <div class="date-time" id="currentDate"></div>
+        </div>
     </div>
 </div>
 
 <script type="text/javascript">
 (function(){
-    // CONFIG
-    var REMINDER_DAY = 28; // set company's reminder date
+    // === NOTIFICATION CONFIG ===
+    var REMINDER_DAY = 28;
     var today = new Date();
     var currentDay = today.getDate();
 
@@ -136,31 +186,44 @@
         "Believe in the process — progress takes time.",
         "Great things never come from comfort zones.",
         "The harder you work, the luckier you get.",
-        "Excellence is not a destination, it's a continuous journey.",
+        "Excellence is a continuous journey.",
         "Your limitation—it's only your imagination.",
-        "Push yourself, because no one else is going to do it for you.",
+        "Push yourself, no one else will do it for you.",
         "Sometimes later becomes never. Do it now.",
-        "The key to success is to start before you're ready.",
-        "Don't stop when you're tired. Stop when you're done.",
-        "Wake up with determination. Go to bed with satisfaction.",
-        "Do something today that your future self will thank you for.",
-        "Little things make big days. Big days make great years.",
-        "It's going to be hard, but hard does not mean impossible.",
+        "Start before you're ready.",
+        "Don't stop when you're tired.",
+        "Wake up with determination.",
+        "Do something today your future self will thank you for.",
+        "Little things make big days.",
+        "Hard does not mean impossible.",
         "Don't wait for opportunity. Create it.",
-        "Success doesn't just find you. You have to go out and get it.",
-        "The difference between ordinary and extraordinary is that little extra.",
+        "Success doesn't find you. Go get it.",
+        "The difference is that little extra.",
         "Quality is not an act, it is a habit.",
         "Stay patient and trust the journey.",
         "Your only limit is you.",
-        "Make today so awesome that yesterday gets jealous.",
-        "Focus on being productive instead of busy.",
-        "Opportunities don't happen. You create them.",
-        "You don't have to be great to start, but you have to start to be great.",
-        "Work hard in silence, let success make the noise.",
+        "Make today awesome.",
+        "Focus on being productive not busy.",
+        "You create opportunities.",
+        "Start to be great.",
+        "Work hard in silence.",
         "Strive for progress, not perfection."
     ];
 
-    // Wait for DOM to be ready
+    // === DATE/TIME UPDATE ===
+    function updateDateTime() {
+        var now = new Date();
+        var dateEl = document.getElementById('currentDate');
+        if (dateEl) {
+            dateEl.textContent = now.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+    }
+
+    // === NOTIFICATION INIT ===
     function initNotice() {
         var wrapper = document.getElementById("noticeWrapper");
         var title = document.getElementById("noticeTitle");
@@ -178,8 +241,8 @@
             wrapper.className = "notice-wrapper reminder";
             accent.innerHTML = "&#9888;&#65039;";
             title.innerHTML = "Payrun Reminder";
-            msg.innerHTML = "Today is the " + REMINDER_DAY + "th — please run this month's payrun to keep payroll up to date and avoid delays.";
-            footer.innerHTML = "— Payroll Reminder";
+            msg.innerHTML = "Today is the " + REMINDER_DAY + "th! Run payrun now.";
+            footer.innerHTML = "— Payroll Team";
         } else {
             // Motivation mode with auto-rotation
             wrapper.className = "notice-wrapper";
@@ -189,7 +252,7 @@
                 var randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
                 title.innerHTML = "Daily Motivation";
                 msg.innerHTML = randomQuote;
-                footer.innerHTML = "— Stay inspired and productive!";
+                footer.innerHTML = "— Stay inspired!";
             }
             
             // Show first quote immediately
@@ -200,7 +263,10 @@
         }
     }
 
-    // Start initialization
+    // === START EVERYTHING ===
+    updateDateTime();
+    setInterval(updateDateTime, 60000); // Update date every minute
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", initNotice);
     } else {
