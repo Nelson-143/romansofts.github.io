@@ -1,33 +1,20 @@
 <style>
-    /* Main container */
-    .payroll-dashboard {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    }
-
     /* Card / notice wrapper */
     .notice-wrapper {
         width: 100%;
-        border-radius: 16px;
-        padding: 20px;
+        border-radius: 14px;
+        padding: 18px;
         position: relative;
         box-sizing: border-box;
         background: #ffffff;
-        border: 1px solid rgba(6,25,48,0.08);
-        box-shadow: 0 8px 25px rgba(10,30,50,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+        border: 1px solid rgba(6,25,48,0.06);
+        box-shadow: 0 6px 20px rgba(10,30,50,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
         display: grid;
-        grid-template-columns: 80px 1fr;
-        gap: 20px;
+        grid-template-columns: 72px 1fr;
+        gap: 16px;
         align-items: center;
-        margin-bottom: 25px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .notice-wrapper:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(10,30,50,0.12);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
     }
 
     /* Accent stripe / icon column - default (motivation) teal/blue */
@@ -35,296 +22,100 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 80px;
-        height: 80px;
-        border-radius: 14px;
+        width: 72px;
+        height: 72px;
+        border-radius: 12px;
         flex-shrink: 0;
-        font-size: 32px;
+        font-size: 28px;
         color: #013241;
         background: linear-gradient(135deg, #cff7fb 0%, #6fd3e8 100%);
-        box-shadow: 0 8px 20px rgba(47,153,173,0.15), inset 0 -6px 18px rgba(255,255,255,0.02);
-        transition: transform 0.3s ease;
-    }
-
-    .notice-wrapper:hover .accent {
-        transform: scale(1.05);
+        box-shadow: 0 6px 18px rgba(47,153,173,0.12), inset 0 -6px 18px rgba(255,255,255,0.02);
     }
 
     /* Main box content */
     .notice-box {
-        padding: 8px 8px 8px 0;
+        padding: 6px 6px 6px 0;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
 
     .notice-title {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         font-weight: 700;
-        font-size: 20px;
-        line-height: 1.1;
+        font-size: 18px;
+        line-height: 1.05;
         color: #022a3a;
     }
 
     .notice-message {
         color: rgba(3,44,64,0.95);
-        font-size: 15px;
-        line-height: 1.5;
-        margin-bottom: 6px;
+        font-size: 14px;
+        line-height: 1.45;
+        margin-bottom: 4px;
     }
 
     .notice-footer {
         color: rgba(6,58,80,0.7);
-        font-size: 14px;
+        font-size: 13px;
         font-style: italic;
-        display: flex;
-        align-items: center;
     }
 
     /* Reminder (payrun) variant - warm coral */
     .notice-wrapper.reminder .accent {
         background: linear-gradient(135deg,#ffe7df 0%,#ffb59a 100%);
-        box-shadow: 0 8px 20px rgba(255,137,90,0.15);
+        box-shadow: 0 6px 18px rgba(255,137,90,0.12);
         color: #4a0b00;
     }
     .notice-wrapper.reminder {
-        border-left: 6px solid rgba(255,110,70,0.2);
-    }
-
-    /* Success variant - green */
-    .notice-wrapper.success .accent {
-        background: linear-gradient(135deg,#e0f7e9 0%,#8dd0a3 100%);
-        box-shadow: 0 8px 20px rgba(76,175,80,0.15);
-        color: #1b3a1f;
-    }
-    .notice-wrapper.success {
-        border-left: 6px solid rgba(76,175,80,0.2);
+        border-left: 6px solid rgba(255,110,70,0.18);
     }
 
     /* subtle accent footer divider */
     .notice-footer::before {
         content: "";
         display: inline-block;
-        width: 10px;
-        height: 10px;
-        margin-right: 10px;
+        width: 8px;
+        height: 8px;
+        margin-right: 8px;
         vertical-align: middle;
         background: linear-gradient(135deg,#93b8ff,#bfeaff);
         border-radius: 50%;
         opacity: 0.9;
     }
 
-    .notice-wrapper.reminder .notice-footer::before {
-        background: linear-gradient(135deg,#ffb59a,#ff8a65);
-    }
-
-    .notice-wrapper.success .notice-footer::before {
-        background: linear-gradient(135deg,#8dd0a3,#66bb6a);
-    }
-
-    /* Welcome Banner Styles */
-    .welcome-banner {
-        background: linear-gradient(135deg, #0fb5b0 0%, #2563eb 100%);
-        border-radius: 18px;
-        padding: 25px 30px;
-        box-shadow: 0 12px 35px rgba(37,99,235,0.2);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        color: white;
-        animation: fadeIn 0.6s ease-out;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 25px;
-        transition: transform 0.3s ease;
-    }
-
-    .welcome-banner:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(37,99,235,0.25);
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .banner-content {
-        flex: 1;
-        z-index: 2;
-    }
-
-    .welcome-text {
-        font-size: 17px;
-        font-weight: 500;
-        opacity: 0.95;
-        margin-bottom: 10px;
-    }
-
-    .main-title {
-        font-size: 36px;
-        font-weight: 700;
-        margin-bottom: 15px;
-        line-height: 1.2;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .subtitle {
-        font-size: 16px;
-        opacity: 0.9;
-        max-width: 500px;
-        line-height: 1.4;
-    }
-
-    .banner-icon {
-        font-size: 90px;
-        opacity: 0.18;
-        position: absolute;
-        right: 35px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1;
-        transition: transform 0.3s ease;
-    }
-
-    .welcome-banner:hover .banner-icon {
-        transform: translateY(-50%) scale(1.05);
-    }
-
-    .decorative-circles {
-        position: absolute;
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        top: -60px;
-        right: -60px;
-        z-index: 0;
-    }
-
-    .decorative-circles::after {
-        content: '';
-        position: absolute;
-        width: 160px;
-        height: 160px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.08);
-        top: 110px;
-        left: -90px;
-    }
-
-    .date-time {
-        text-align: right;
-        z-index: 2;
-    }
-
-    .date-time .date,
-    .date-time .time {
-        font-size: 15px;
-        opacity: 0.95;
-        font-weight: 500;
-    }
-
-    .date-time .time {
-        font-size: 24px;
-        font-weight: 600;
-        margin-top: 5px;
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .payroll-dashboard {
-            padding: 15px;
-        }
-        
-        .welcome-banner {
-            flex-direction: column;
-            text-align: center;
-            padding: 20px 25px;
-        }
-
-        .main-title {
-            font-size: 28px;
-        }
-
-        .date-time {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .banner-icon {
-            display: none;
-        }
-    }
-
-    @media (max-width: 480px){
+    /* Responsive single-column on very narrow screens */
+    @media (max-width:420px){
         .notice-wrapper {
-            grid-template-columns: 60px 1fr;
-            gap: 15px;
-            padding: 16px;
-            border-radius: 14px;
+            grid-template-columns: 56px 1fr;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 12px;
         }
         .accent { 
-            width: 60px; 
-            height: 60px; 
-            font-size: 24px; 
-            border-radius: 12px; 
+            width:56px; 
+            height:56px; 
+            font-size:22px; 
+            border-radius:10px; 
         }
         .notice-title {
-            font-size: 18px;
+            font-size: 16px;
         }
         .notice-message {
-            font-size: 14px;
-        }
-        
-        .welcome-banner {
-            padding: 18px 20px;
-        }
-        
-        .main-title {
-            font-size: 24px;
-        }
-        
-        .welcome-text {
-            font-size: 15px;
+            font-size: 13px;
         }
     }
 </style>
 
-<div class="payroll-dashboard">
-    <!-- Notification Card -->
-    <div class="notice-wrapper" id="noticeWrapper">
-        <div class="accent" id="accentIcon"></div>
-        <div class="notice-box" id="noticeBox">
-            <div class="notice-title" id="noticeTitle"></div>
-            <div class="notice-message" id="noticeMessage"></div>
-            <div class="notice-footer" id="noticeFooter"></div>
-        </div>
-    </div>
+<div class="notice-wrapper" id="noticeWrapper">
+      <div class="accent" id="accentIcon">✨</div>
 
-    <!-- Welcome Banner -->
-    <div class="welcome-banner" role="region" aria-label="Payroll welcome banner">
-        <div class="decorative-circles" aria-hidden="true"></div>
-        <div class="banner-icon" aria-hidden="true">💰</div>
-
-        <div class="banner-content">
-            <div class="welcome-text">Hello there 👋, welcome to</div>
-            <div class="main-title"><strong>Payroll Management System</strong></div>
-            <div class="subtitle">Manage your payroll efficiently and securely in one place. Process payments, generate reports, and maintain employee records with ease.</div>
-        </div>
-
-        <div class="date-time" aria-live="polite">
-            <div class="date" id="currentDate"></div>
-            <div class="time" id="currentTime"></div>
-        </div>
+    <div class="notice-box" id="noticeBox">
+        <div class="notice-title" id="noticeTitle"></div>
+        <div class="notice-message" id="noticeMessage"></div>
+        <div class="notice-footer" id="noticeFooter"></div>
     </div>
 </div>
 
@@ -335,7 +126,7 @@
     var today = new Date();
     var currentDay = today.getDate();
 
-    // Expanded quotes collection
+    // Quotes - expanded collection
     var quotes = [
         "Keep going — every small step builds momentum!",
         "Dream big, work hard, stay focused.",
@@ -369,6 +160,7 @@
         "Strive for progress, not perfection."
     ];
 
+    // Wait for DOM to be ready
     function initNotice() {
         var wrapper = document.getElementById("noticeWrapper");
         var title = document.getElementById("noticeTitle");
@@ -386,7 +178,7 @@
             wrapper.className = "notice-wrapper reminder";
             accent.innerHTML = "&#9888;&#65039;";
             title.innerHTML = "Payrun Reminder";
-            msg.innerHTML = "Today is the " + REMINDER_DAY + getOrdinal(REMINDER_DAY) + " — please run this month's payrun to keep payroll up to date and avoid delays.";
+            msg.innerHTML = "Today is the " + REMINDER_DAY + "th — please run this month's payrun to keep payroll up to date and avoid delays.";
             footer.innerHTML = "— Payroll Reminder";
         } else {
             // Motivation mode with auto-rotation
@@ -408,45 +200,182 @@
         }
     }
 
-    // Helper function for ordinal dates (1st, 2nd, 3rd, etc.)
-    function getOrdinal(n) {
-        var s = ["th", "st", "nd", "rd"],
-            v = n % 100;
-        return (s[(v - 20) % 10] || s[v] || s[0]);
+    // Start initialization
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initNotice);
+    } else {
+        initNotice();
+    }
+})();
+</script>
+
+<!-- Added banner below the notification -->
+<style>
+    /* ONLY affect elements inside our custom banner */
+    .my-payroll-banner-wrapper *,
+    .my-payroll-banner-wrapper *::before,
+    .my-payroll-banner-wrapper *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    // Date and time functions
+    .my-payroll-banner-wrapper {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px;
+        background: transparent;
+    }
+
+    .welcome-banner {
+        background: linear-gradient(135deg, #0fb5b0 0%, #2563eb 100%);
+        border-radius: 16px;
+        padding: 20px 25px;
+        box-shadow: 0 10px 30px rgba(37,99,235,0.18);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: white;
+        animation: fadeIn 0.6s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .banner-content {
+        flex: 1;
+        z-index: 2;
+    }
+
+    .welcome-text {
+        font-size: 16px;
+        font-weight: 500;
+        opacity: 0.95;
+        margin-bottom: 8px;
+    }
+
+    .main-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        line-height: 1.2;
+    }
+
+    .subtitle {
+        font-size: 15px;
+        opacity: 0.9;
+        max-width: 500px;
+    }
+
+    .banner-icon {
+        font-size: 80px;
+        opacity: 0.15;
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+    .decorative-circles {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        top: -50px;
+        right: -50px;
+        z-index: 0;
+    }
+
+    .decorative-circles::after {
+        content: '';
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        top: 100px;
+        left: -80px;
+    }
+
+    .date-time {
+        text-align: right;
+    }
+
+    .date-time .date,
+    .date-time .time {
+        font-size: 14px;
+        opacity: 0.95;
+    }
+
+    @media (max-width: 768px) {
+        .welcome-banner {
+            flex-direction: column;
+            text-align: center;
+            padding: 15px 20px;
+        }
+
+        .main-title {
+            font-size: 26px;
+        }
+
+        .date-time {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .banner-icon {
+            display: none;
+        }
+    }
+</style>
+
+<!-- Wrap everything in a uniquely classed div -->
+<div class="my-payroll-banner-wrapper">
+    <div class="welcome-banner" role="region" aria-label="Payroll welcome banner">
+        <div class="decorative-circles" aria-hidden="true"></div>
+        <div class="banner-icon" aria-hidden="true">💰</div>
+
+        <div class="banner-content">
+            <div class="welcome-text">Hello there 👋, welcome to</div>
+            <div class="main-title"><strong>Payroll Management System</strong></div>
+            <div class="subtitle">Manage your payroll efficiently and securely in one place</div>        </div>
+
+        <div class="date-time" aria-live="polite">
+            <div class="date" id="currentDate"></div>
+            <div class="time" id="currentTime"></div>
+        </div>
+    </div>
+</div>
+
+<script>
     function updateDateTime() {
         const now = new Date();
         const dateEl = document.getElementById('currentDate');
         const timeEl = document.getElementById('currentTime');
-        
-        if (dateEl && timeEl) {
-            dateEl.textContent = now.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            timeEl.textContent = now.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-        }
-    }
-
-    // Start initialization
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", function() {
-            initNotice();
-            updateDateTime();
-            setInterval(updateDateTime, 1000);
+        if (!dateEl || !timeEl) return;
+        dateEl.textContent = now.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
-    } else {
-        initNotice();
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
+        timeEl.textContent = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
     }
-})();
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
 </script>
