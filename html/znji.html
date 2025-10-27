@@ -10,7 +10,7 @@
         border: 1px solid rgba(6,25,48,0.06);
         box-shadow: 0 6px 20px rgba(10,30,50,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
         display: grid;
-        grid-template-columns: 72px 1fr;
+        grid-template-columns: 72px 1fr 72px; /* Added third column for photo */
         gap: 16px;
         align-items: center;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -30,6 +30,18 @@
         color: #013241;
         background: linear-gradient(135deg, #cff7fb 0%, #6fd3e8 100%);
         box-shadow: 0 6px 18px rgba(47,153,173,0.12), inset 0 -6px 18px rgba(255,255,255,0.02);
+    }
+
+    /* Photo column on the right */
+    .photo-side {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        border-radius: 12px;
+        flex-shrink: 0;
+        overflow: hidden;
     }
 
     /* Main box content */
@@ -89,12 +101,13 @@
     /* Responsive single-column on very narrow screens */
     @media (max-width:420px){
         .notice-wrapper {
-            grid-template-columns: 56px 1fr;
+            grid-template-columns: 56px 1fr 56px;
             gap: 12px;
             padding: 14px;
             border-radius: 12px;
         }
-        .accent { 
+        .accent,
+        .photo-side { 
             width:56px; 
             height:56px; 
             font-size:22px; 
@@ -110,12 +123,19 @@
 </style>
 
 <div class="notice-wrapper" id="noticeWrapper">
-      <div class="accent" id="accentIcon">✨</div>
-
+    <!-- Left side: Icon -->
+    <div class="accent" id="accentIcon">✨</div>
+    
+    <!-- Middle: Content -->
     <div class="notice-box" id="noticeBox">
         <div class="notice-title" id="noticeTitle"></div>
         <div class="notice-message" id="noticeMessage"></div>
         <div class="notice-footer" id="noticeFooter"></div>
+    </div>
+    
+    <!-- Right side: Photo -->
+    <div class="photo-side">
+        <img src="../assets/images/boats.png" alt="Boats" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;">
     </div>
 </div>
 
@@ -176,14 +196,14 @@
         // State: reminder or motivation
         if (currentDay === REMINDER_DAY) {
             wrapper.className = "notice-wrapper reminder";
-            accent.innerHTML = "&#9888;&#65039;";
+            accent.innerHTML = "&#9888;&#65039;"; // Warning icon for reminders
             title.innerHTML = "Payrun Reminder";
             msg.innerHTML = "Today is the " + REMINDER_DAY + "th — please run this month's payrun to keep payroll up to date and avoid delays.";
             footer.innerHTML = "— Payroll Reminder";
         } else {
             // Motivation mode with auto-rotation
             wrapper.className = "notice-wrapper";
-            accent.innerHTML = "&#127775;";
+            accent.innerHTML = "✨"; // Sparkles icon for motivation
 
             function updateQuote() {
                 var randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
@@ -209,7 +229,7 @@
 })();
 </script>
 
-<!-- Added banner below the notification -->
+<!-- The rest of your banner code remains exactly the same -->
 <style>
     /* ONLY affect elements inside our custom banner */
     .my-payroll-banner-wrapper *,
