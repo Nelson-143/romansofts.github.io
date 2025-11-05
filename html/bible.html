@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-     <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.svg" />
+    <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.svg" />
     <title>Daily Bible Verses</title>
     <style>
         :root{
             --bg:#f6f7fb; --card:#fff; --muted:#6b7280; --accent:#0ea5a4; --shadow:0 6px 18px rgba(16,24,40,0.08);
             --radius:12px; --gap:12px;
+            --text-primary:#0f172a;
         }
         body {
             margin: 0;
@@ -42,15 +43,15 @@
         .dv-header{
             display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:6px;
         }
-        .dv-title{font-size:15px; font-weight:600; color:#0f172a}
+        .dv-title{font-size:15px; font-weight:600; color:var(--text-primary)}
         .dv-meta{font-size:12px; color:var(--muted)}
         .dv-body{
-            font-size:18px; line-height:1.45; color:#0f172a; margin:8px 0 12px;
+            font-size:18px; line-height:1.45; color:var(--text-primary); margin:8px 0 12px;
         }
         .dv-controls{display:flex; gap:8px; flex-wrap:wrap}
         .dv-btn{
             background:transparent; border:1px solid #e6e9ef; padding:8px 10px; border-radius:9px;
-            cursor:pointer; font-size:13px; color:#0f172a;
+            cursor:pointer; font-size:13px; color:var(--text-primary);
             transition: all 0.2s ease;
         }
         .dv-btn:hover {
@@ -60,7 +61,10 @@
         .dv-btn.primary{background:var(--accent); color:#fff; border-color:transparent}
         .dv-small{font-size:13px; color:var(--muted)}
         .dv-dark{
-            --bg:#0b1220; --card:#071127; --muted:#9aa4b2; --accent:#7ee7db; color:var(--muted);
+            --bg:#0b1220; --card:#071127; --muted:#9aa4b2; --accent:#7ee7db; 
+            --text-primary:#f1f5f9; /* Fixed text color for dark mode */
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--muted);
         }
         .dv-dark .dv-card{box-shadow:none}
         .dv-toast{
@@ -82,6 +86,10 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
         
+        .dv-dark .background-container {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
         .floating-cross {
             position: absolute;
             font-size: 24px;
@@ -89,6 +97,10 @@
             animation: float 20s infinite linear;
             user-select: none;
             pointer-events: none;
+        }
+        
+        .dv-dark .floating-cross {
+            color: rgba(126, 231, 219, 0.15);
         }
         
         .floating-dove {
@@ -118,6 +130,10 @@
             pointer-events: none;
         }
         
+        .dv-dark .light-ray {
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
+        }
+        
         .verse-counter {
             position: fixed;
             top: 20px;
@@ -131,9 +147,18 @@
             transition: all 0.3s ease;
         }
         
+        .dv-dark .verse-counter {
+            background: rgba(15, 23, 42, 0.9);
+            color: #f1f5f9;
+        }
+        
         .verse-counter:hover {
             transform: scale(1.05);
             background: rgba(255, 255, 255, 1);
+        }
+        
+        .dv-dark .verse-counter:hover {
+            background: rgba(15, 23, 42, 1);
         }
         
         .background-toggle {
@@ -150,9 +175,18 @@
             transition: all 0.3s ease;
         }
         
+        .dv-dark .background-toggle {
+            background: rgba(15, 23, 42, 0.9);
+            color: #f1f5f9;
+        }
+        
         .background-toggle:hover {
             transform: scale(1.05);
             background: rgba(255, 255, 255, 1);
+        }
+        
+        .dv-dark .background-toggle:hover {
+            background: rgba(15, 23, 42, 1);
         }
         
         /* Footer with attribution */
@@ -196,6 +230,230 @@
             text-decoration: underline;
         }
         
+        /* Gamification Elements */
+        .motivation-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 200px;
+        }
+        
+        .dv-dark .motivation-container {
+            background: rgba(15, 23, 42, 0.9);
+            color: #f1f5f9;
+        }
+        
+        .motivation-container:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .dv-dark .motivation-container:hover {
+            background: rgba(15, 23, 42, 1);
+        }
+        
+        .motivation-icon {
+            color: #ff6b35;
+            animation: pulse-fire 2s infinite;
+        }
+        
+        .achievement-badge {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .dv-dark .achievement-badge {
+            background: rgba(15, 23, 42, 0.9);
+            color: #f1f5f9;
+        }
+        
+        .achievement-badge.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .achievement-icon {
+            color: gold;
+            font-size: 18px;
+        }
+        
+        .motivational-quote {
+            text-align: center;
+            margin: 15px 0;
+            font-style: italic;
+            color: var(--muted);
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(14, 165, 164, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .dv-dark .motivational-quote {
+            background: rgba(126, 231, 219, 0.05);
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+            background: rgba(14, 165, 164, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .dv-dark .progress-container {
+            background: rgba(126, 231, 219, 0.1);
+        }
+        
+        .progress-title {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(14, 165, 164, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .dv-dark .progress-bar {
+            background: rgba(126, 231, 219, 0.2);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .daily-challenge {
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid gold;
+        }
+        
+        .dv-dark .daily-challenge {
+            background: rgba(255, 215, 0, 0.05);
+        }
+        
+        .challenge-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #b8860b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .challenge-text {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        
+        .challenge-complete {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .challenge-complete:hover {
+            transform: scale(1.05);
+        }
+        
+        .share-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(14, 165, 164, 0.05);
+            border-radius: 10px;
+        }
+        
+        .dv-dark .share-section {
+            background: rgba(126, 231, 219, 0.05);
+        }
+        
+        .share-title {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        
+        .share-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .next-visit-motivation {
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(14, 165, 164, 0.08);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            font-style: italic;
+        }
+        
+        .dv-dark .next-visit-motivation {
+            background: rgba(126, 231, 219, 0.08);
+        }
+        
         @keyframes float {
             0% {
                 transform: translate(0, 0) rotate(0deg);
@@ -223,10 +481,42 @@
             }
         }
         
+        @keyframes pulse-fire {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes confetti {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            opacity: 0;
+            z-index: 1000;
+        }
+        
         @media (max-width:560px){
             .dv-card{padding:14px}
             .dv-body{font-size:16px}
-            .verse-counter, .background-toggle {
+            .verse-counter, .background-toggle, .motivation-container, .achievement-badge {
                 position: relative;
                 top: auto;
                 right: auto;
@@ -248,8 +538,18 @@
         <!-- Floating elements will be added here by JavaScript -->
     </div>
     
+    <div class="motivation-container" id="motivationContainer">
+        <span class="motivation-icon">🌟</span>
+        <span id="motivationText">God's Word is alive!</span>
+    </div>
+    
     <div class="verse-counter" id="verseCounter">
         Verses Saved: <span id="savedCount">0</span>
+    </div>
+    
+    <div class="achievement-badge" id="achievementBadge">
+        <span class="achievement-icon">🏆</span>
+        <span id="achievementText">New Achievement!</span>
     </div>
     
     <div class="background-toggle" id="backgroundToggle">
@@ -276,9 +576,44 @@
                         <button class="dv-btn" id="dvToggleTheme" title="Toggle theme">Theme</button>
                     </div>
                 </div>
+                
+                <div class="motivational-quote" id="motivationalQuote">
+                    "Your word is a lamp for my feet, a light on my path." - Psalm 119:105
+                </div>
 
                 <!-- Where the external script will inject the verse -->
                 <div id="dailyVersesWrapper"></div>
+                
+                <div class="share-section">
+                    <div class="share-title">Bless someone today</div>
+                    <button class="share-btn" id="shareBtn">
+                        📤 Share This Verse
+                    </button>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-title">Your Spiritual Journey</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Every visit brings you closer to God</div>
+                </div>
+                
+                <div class="daily-challenge">
+                    <div class="challenge-title">
+                        <span>🌟</span> Today's Reflection
+                    </div>
+                    <div class="challenge-text" id="challengeText">
+                        How does today's verse speak to your current situation?
+                    </div>
+                    <div class="challenge-complete" id="challengeComplete">
+                        I've Reflected
+                    </div>
+                </div>
+                
+                <div class="next-visit-motivation" id="nextVisitMotivation">
+                    See you tomorrow for more wisdom from God's Word! ✨
+                </div>
 
                 <div class="dv-small dv-meta" id="dvSavedCount" style="margin-top:8px"></div>
             </div>
@@ -289,13 +624,15 @@
             <div class="attribution">
                 <a href="https://nelson-143.github.io/romansofts.github.io/html/index.html" target="_blank" rel="noopener noreferrer" aria-label="ROMANSOFTS homepage" style="text-decoration:none;">
                     <div class="romansofts-logo" style="width:65px;height:65px;overflow:hidden;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:rgba(14,165,164,0.08);">
-                        <img src="../assets/images/romn.jpg" alt="ROMANSOFTS logo" loading="lazy"
-                             style="width:100%;height:100%;object-fit:contain;display:block;" />
+                        <!-- Fallback text if image doesn't load -->
+                         <img src="../assets/images/romn.jpg" alt="ROMANSOFTS logo" loading="lazy"
+     style="width:100%;height:100%;object-fit:contain;display:block;" />
+
+                        
                     </div>
                 </a>
-                </div>
                 <div>•</div>
-             
+               
             </div>
         </div>
     </div>
@@ -327,6 +664,11 @@
             localStorage.setItem(favoritesKey, JSON.stringify(f.slice(0,50)));
             updateVerseCounter();
             el('dvSavedCount').textContent = `${f.length} saved`;
+            
+            // Show motivation when saving
+            if (f.length % 5 === 0) {
+                showAchievement('Verse Collector!', `You've saved ${f.length} verses!`);
+            }
         };
 
         // Update saved count display
@@ -346,10 +688,12 @@
         // Initialize the verse counter
         updateVerseCounter();
 
-        // Theme toggle
+        // Theme toggle - FIXED DARK MODE TEXT COLOR
         let isLarge = false;
         el('dvToggleTheme').addEventListener('click', ()=> {
-            document.getElementById('dailyVerseContainer').classList.toggle('dv-dark');
+            const container = document.getElementById('dailyVerseContainer');
+            container.classList.toggle('dv-dark');
+            document.body.classList.toggle('dv-dark');
         });
 
         // Text size toggle
@@ -365,7 +709,7 @@
             if(!body){ toast('No verse to copy'); return; }
             const text = (body.innerText || body.textContent || '').trim();
             if(!text){ toast('No verse to copy'); return; }
-            navigator.clipboard?.writeText(text).then(()=> toast('Copied')).catch(()=> toast('Copy failed'));
+            navigator.clipboard?.writeText(text).then(()=> toast('Copied to clipboard')).catch(()=> toast('Copy failed'));
         });
 
         // Save button
@@ -374,7 +718,7 @@
             const ref = el('dvRef').textContent || '';
             if(!body){ toast('Nothing to save'); return; }
             saveFavorite(body.innerText.trim(), ref);
-            toast('Saved');
+            toast('Verse saved! 💾');
             
             // Add a visual effect when saving
             const saveBtn = el('dvSave');
@@ -384,6 +728,37 @@
                 saveBtn.style.backgroundColor = '';
                 saveBtn.style.color = '';
             }, 500);
+        });
+
+        // Share button
+        el('shareBtn').addEventListener('click', ()=>{
+            const body = document.querySelector('#dailyVerseContainer .dv-body');
+            if(!body){ toast('No verse to share'); return; }
+            const text = (body.innerText || body.textContent || '').trim();
+            if(!text){ toast('No verse to share'); return; }
+            
+            const shareUrl = 'https://nelson-143.github.io/romansofts.github.io/html/bible.html';
+            const shareText = `Daily Bible Verse: ${text}\n\nRead more at: ${shareUrl}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Daily Bible Verse',
+                    text: text,
+                    url: shareUrl
+                }).then(() => {
+                    toast('Shared successfully! 🙏');
+                }).catch(() => {
+                    // Fallback to clipboard
+                    navigator.clipboard?.writeText(shareText).then(() => 
+                        toast('Verse copied to share! 📤')
+                    ).catch(() => toast('Share failed'));
+                });
+            } else {
+                // Fallback to clipboard
+                navigator.clipboard?.writeText(shareText).then(() => 
+                    toast('Verse copied to share! 📤')
+                ).catch(() => toast('Share failed'));
+            }
         });
 
         // Observe the injected script content and enhance UI
@@ -410,12 +785,15 @@
             // update saved count
             updateVerseCounter();
             observer.disconnect(); // run once per injection
+            
+            // Show welcome message for first visit today
+            showDailyWelcome();
         });
         observer.observe(target, {childList:true, subtree:true});
 
         // In case the script already finished before observer was attached
         if(target.childNodes.length) {
-            // small delay to let any rendering finalizes
+            // small delay to let any rendering finalize
             setTimeout(()=> observer.takeRecords() && observer.disconnect() , 150);
         }
 
@@ -459,6 +837,155 @@
 
         // Initialize the background
         createFloatingElements();
+
+        // ========== MOTIVATIONAL FEATURES ==========
+        
+        // Motivational messages that rotate
+        const motivationMessages = [
+            "God's Word is alive!",
+            "Daily bread for your soul",
+            "Growing in faith daily",
+            "Your spiritual journey matters",
+            "Blessed to be a blessing",
+            "Strength for today, hope for tomorrow",
+            "Walking in God's light",
+            "Transformed by His Word"
+        ];
+        
+        let currentMotivationIndex = 0;
+        function rotateMotivation() {
+            currentMotivationIndex = (currentMotivationIndex + 1) % motivationMessages.length;
+            el('motivationText').textContent = motivationMessages[currentMotivationIndex];
+        }
+        
+        // Rotate every 8 seconds
+        setInterval(rotateMotivation, 8000);
+        
+        // Next visit motivations
+        const nextVisitMessages = [
+            "See you tomorrow for more wisdom from God's Word! ✨",
+            "Your daily spiritual discipline is changing you! 🌱",
+            "Come back tomorrow for fresh inspiration! 💫",
+            "God has new mercies for you every morning! 🌅",
+            "Your consistency is building spiritual strength! 💪",
+            "Tomorrow brings another opportunity to grow! 📖"
+        ];
+        
+        function showNextVisitMotivation() {
+            const randomIndex = Math.floor(Math.random() * nextVisitMessages.length);
+            el('nextVisitMotivation').textContent = nextVisitMessages[randomIndex];
+        }
+        
+        // Daily welcome message
+        function showDailyWelcome() {
+            const hours = new Date().getHours();
+            let greeting = "Good morning!";
+            if (hours >= 12 && hours < 17) greeting = "Good afternoon!";
+            if (hours >= 17) greeting = "Good evening!";
+            
+            const welcomeMessages = [
+                `${greeting} God's Word is fresh today!`,
+                `${greeting} Your daily spiritual nourishment is here!`,
+                `${greeting} Ready to be inspired?`,
+                `${greeting} Time for wisdom from above!`
+            ];
+            
+            const randomWelcome = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+            toast(randomWelcome);
+            
+            // Show next visit motivation after a delay
+            setTimeout(showNextVisitMotivation, 3000);
+        }
+        
+        // Achievement system
+        const showAchievement = (title, subtitle) => {
+            const badge = el('achievementBadge');
+            badge.querySelector('#achievementText').textContent = title;
+            badge.classList.add('show');
+            
+            // Change motivational quote
+            const quotes = [
+                '"I can do all this through him who gives me strength." - Philippians 4:13',
+                '"The Lord is my strength and my shield." - Psalm 28:7',
+                '"Your word is a lamp for my feet, a light on my path." - Psalm 119:105',
+                '"Do not be anxious about anything." - Philippians 4:6',
+                '"Trust in the Lord with all your heart." - Proverbs 3:5'
+            ];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            el('motivationalQuote').textContent = randomQuote;
+            
+            setTimeout(() => {
+                badge.classList.remove('show');
+            }, 3000);
+        };
+        
+        // Confetti effect
+        const createConfetti = () => {
+            const colors = ['#0ea5a4', '#f59e0b', '#ef4444', '#8b5cf6', '#10b981'];
+            const container = document.body;
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `confetti ${1 + Math.random() * 2}s forwards`;
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                
+                container.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        };
+        
+        // Daily challenge
+        el('challengeComplete').addEventListener('click', function() {
+            this.textContent = 'Reflection Completed! 🌟';
+            this.style.backgroundColor = '#10b981';
+            showAchievement('Deep Thinker!', 'You reflected on God\'s Word!');
+            createConfetti();
+            
+            // Disable after completion
+            this.style.pointerEvents = 'none';
+        });
+        
+        // Rotate challenges
+        const challenges = [
+            "How does today's verse speak to your current situation?",
+            "What is God saying to you through this verse today?",
+            "How can you apply this verse in your life today?",
+            "What promise or encouragement do you find in this verse?",
+            "How does this verse challenge or comfort you?"
+        ];
+        
+        const todayChallengeIndex = new Date().getDate() % challenges.length;
+        el('challengeText').textContent = challenges[todayChallengeIndex];
+        
+        // Progress based on visits (simple version)
+        function updateProgress() {
+            const visitCount = parseInt(localStorage.getItem('dv-visit-count') || '0') + 1;
+            localStorage.setItem('dv-visit-count', visitCount.toString());
+            
+            // Simple progress indicator
+            const progress = Math.min(visitCount, 7);
+            const progressPercent = (progress / 7) * 100;
+            
+            el('progressFill').style.width = `${progressPercent}%`;
+            
+            // Show achievement for consistent visits
+            if (visitCount === 3) {
+                showAchievement('Growing Consistent!', '3 days in God\'s Word!');
+            } else if (visitCount === 7) {
+                showAchievement('Weekly Warrior!', '7 days of faithfulness!');
+                createConfetti();
+            }
+        }
+        
+        // Initialize motivational features
+        updateProgress();
+        rotateMotivation();
     </script>
 </body>
 </html>
