@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Daily Bible Verses</title>
+    <style>
+        :root{
+            --bg:#f6f7fb; --card:#fff; --muted:#6b7280; --accent:#0ea5a4; --shadow:0 6px 18px rgba(16,24,40,0.08);
+            --radius:12px; --gap:12px;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        .dv-wrapper{
+            max-width:760px; margin:28px auto; padding:16px; box-sizing:border-box;
+            position: relative;
+            z-index: 1;
+        }
+        .dv-card{
+            background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+            padding:18px; display:flex; gap:16px; align-items:flex-start;
+            position: relative;
+            z-index: 2;
+        }
+        .dv-side{
+            min-width:56px; display:flex; flex-direction:column; gap:8px; align-items:center;
+        }
+        .dv-icon{
+            width:48px; height:48px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(180deg,rgba(14,165,164,0.12),rgba(14,165,164,0.06));
+            color:var(--accent); font-weight:700; font-size:18px;
+        }
+        .dv-main{flex:1}
+        .dv-header{
+            display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:6px;
+        }
+        .dv-title{font-size:15px; font-weight:600; color:#0f172a}
+        .dv-meta{font-size:12px; color:var(--muted)}
+        .dv-body{
+            font-size:18px; line-height:1.45; color:#0f172a; margin:8px 0 12px;
+        }
+        .dv-controls{display:flex; gap:8px; flex-wrap:wrap}
+        .dv-btn{
+            background:transparent; border:1px solid #e6e9ef; padding:8px 10px; border-radius:9px;
+            cursor:pointer; font-size:13px; color:#0f172a;
+            transition: all 0.2s ease;
+        }
+        .dv-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .dv-btn.primary{background:var(--accent); color:#fff; border-color:transparent}
+        .dv-small{font-size:13px; color:var(--muted)}
+        .dv-dark{
+            --bg:#0b1220; --card:#071127; --muted:#9aa4b2; --accent:#7ee7db; color:var(--muted);
+        }
+        .dv-dark .dv-card{box-shadow:none}
+        .dv-toast{
+            position:fixed; left:50%; transform:translateX(-50%); bottom:18px;
+            background:#111827; color:#fff; padding:10px 14px; border-radius:10px; font-size:13px; opacity:0; pointer-events:none;
+            transition:all .18s ease; z-index: 1000;
+        }
+        .dv-toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+        
+        /* Background elements */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .floating-cross {
+            position: absolute;
+            font-size: 24px;
+            color: rgba(14, 165, 164, 0.15);
+            animation: float 20s infinite linear;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .floating-dove {
+            position: absolute;
+            font-size: 28px;
+            color: rgba(255, 255, 255, 0.2);
+            animation: float 25s infinite linear reverse;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .floating-bible {
+            position: absolute;
+            font-size: 22px;
+            color: rgba(119, 221, 119, 0.15);
+            animation: float 30s infinite linear;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .light-ray {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 15s infinite alternate;
+            pointer-events: none;
+        }
+        
+        .verse-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        
+        .verse-counter:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .background-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .background-toggle:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        /* Footer with attribution */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .attribution {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .romansofts-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #0ea5a4;
+            background: rgba(14, 165, 164, 0.1);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .dailyverses-link {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .dailyverses-link:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(20px, 40px) rotate(90deg);
+            }
+            50% {
+                transform: translate(40px, 0) rotate(180deg);
+            }
+            75% {
+                transform: translate(20px, -40px) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0.7;
+            }
+        }
+        
+        @media (max-width:560px){
+            .dv-card{padding:14px}
+            .dv-body{font-size:16px}
+            .verse-counter, .background-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
+                bottom: auto;
+                left: auto;
+                margin: 10px 0;
+                display: inline-block;
+            }
+            .attribution {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-container" id="backgroundContainer">
+        <div class="light-ray"></div>
+        <!-- Floating elements will be added here by JavaScript -->
+    </div>
+    
+    <div class="verse-counter" id="verseCounter">
+        Verses Saved: <span id="savedCount">0</span>
+    </div>
+    
+    <div class="background-toggle" id="backgroundToggle">
+        Toggle Background
+    </div>
+
+    <div class="dv-wrapper" id="dailyVerseContainer">
+        <div class="dv-card" id="dvCard" aria-live="polite">
+            <div class="dv-side">
+                <div class="dv-icon">B</div>
+                <div class="dv-small dv-meta" id="dvLang">niv</div>
+            </div>
+
+            <div class="dv-main">
+                <div class="dv-header">
+                    <div>
+                        <div class="dv-title">Daily Verse</div>
+                        <div class="dv-small dv-meta" id="dvRef">Loading…</div>
+                    </div>
+                    <div class="dv-controls" id="dvControls">
+                        <button class="dv-btn" id="dvCopy" title="Copy verse">Copy</button>
+                        <button class="dv-btn" id="dvSave" title="Save to favorites">Save</button>
+                        <button class="dv-btn" id="dvToggleSize" title="Toggle text size">A</button>
+                        <button class="dv-btn" id="dvToggleTheme" title="Toggle theme">Theme</button>
+                    </div>
+                </div>
+
+                <!-- Where the external script will inject the verse -->
+                <div id="dailyVersesWrapper"></div>
+
+                <div class="dv-small dv-meta" id="dvSavedCount" style="margin-top:8px"></div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div>Powered by</div>
+            <div class="attribution">
+                <div class="romansofts-logo" style="width:65px;height:65px;overflow:hidden;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:rgba(14,165,164,0.08);">
+<img src="../assets/images/romn.jpg" alt="ROMANSOFTS logo" loading="lazy"
+     style="width:100%;height:100%;object-fit:contain;display:block;" />
+                </div>
+                <div>•</div>
+                <div>
+                    Bible verses provided by 
+                    <a href="https://dailyverses.net" class="dailyverses-link" target="_blank">dailyverses.net</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- toast -->
+    <div class="dv-toast" id="dvToast"></div>
+
+    <!-- original script (keeps existing behavior) -->
+    <script async defer src="https://dailyverses.net/get/verse.js?language=niv"></script>
+
+    <script>
+        // Simple helper functions
+        const el = id => document.getElementById(id);
+        const toast = (msg) => {
+            const t = el('dvToast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(t._timeout);
+            t._timeout = setTimeout(()=> t.classList.remove('show'), 2200);
+        };
+
+        // Read/Write favorites to localStorage
+        const favoritesKey = 'dv-favorites-v1';
+        const getFavorites = () => {
+            try { return JSON.parse(localStorage.getItem(favoritesKey) || '[]') } catch(e){ return [] }
+        };
+        const saveFavorite = (text, ref) => {
+            const f = getFavorites();
+            f.unshift({text, ref, created:Date.now()});
+            localStorage.setItem(favoritesKey, JSON.stringify(f.slice(0,50)));
+            updateVerseCounter();
+            el('dvSavedCount').textContent = `${f.length} saved`;
+        };
+
+        // Update saved count display
+        const updateVerseCounter = () => {
+            const count = getFavorites().length;
+            el('savedCount').textContent = count;
+            el('dvSavedCount').textContent = `${count} saved`;
+            
+            // Animate the counter when it changes
+            const counter = el('verseCounter');
+            counter.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                counter.style.transform = 'scale(1)';
+            }, 300);
+        };
+
+        // Initialize the verse counter
+        updateVerseCounter();
+
+        // Theme toggle
+        let isLarge = false;
+        el('dvToggleTheme').addEventListener('click', ()=> {
+            document.getElementById('dailyVerseContainer').classList.toggle('dv-dark');
+        });
+
+        // Text size toggle
+        el('dvToggleSize').addEventListener('click', ()=> {
+            isLarge = !isLarge;
+            const b = document.querySelector('#dailyVerseContainer .dv-body');
+            if(b) b.style.fontSize = isLarge ? '20px' : '';
+        });
+
+        // Copy button
+        el('dvCopy').addEventListener('click', ()=>{
+            const body = document.querySelector('#dailyVerseContainer .dv-body');
+            if(!body){ toast('No verse to copy'); return; }
+            const text = (body.innerText || body.textContent || '').trim();
+            if(!text){ toast('No verse to copy'); return; }
+            navigator.clipboard?.writeText(text).then(()=> toast('Copied')).catch(()=> toast('Copy failed'));
+        });
+
+        // Save button
+        el('dvSave').addEventListener('click', ()=>{
+            const body = document.querySelector('#dailyVerseContainer .dv-body');
+            const ref = el('dvRef').textContent || '';
+            if(!body){ toast('Nothing to save'); return; }
+            saveFavorite(body.innerText.trim(), ref);
+            toast('Saved');
+            
+            // Add a visual effect when saving
+            const saveBtn = el('dvSave');
+            saveBtn.style.backgroundColor = '#0ea5a4';
+            saveBtn.style.color = 'white';
+            setTimeout(() => {
+                saveBtn.style.backgroundColor = '';
+                saveBtn.style.color = '';
+            }, 500);
+        });
+
+        // Observe the injected script content and enhance UI
+        const target = el('dailyVersesWrapper');
+        const observer = new MutationObserver((mutations)=>{
+            if(!target || !target.childNodes.length) return;
+            // move the injected nodes into our styled body if not already
+            let dvBody = document.querySelector('#dailyVerseContainer .dv-body');
+            if(!dvBody){
+                dvBody = document.createElement('div');
+                dvBody.className = 'dv-body';
+                // move all nodes from target into dvBody
+                while(target.firstChild){
+                    dvBody.appendChild(target.firstChild);
+                }
+                target.appendChild(dvBody);
+            }
+            // try to extract a verse reference (common patterns)
+            const text = dvBody.innerText.trim();
+            // Attempt to find "Book Chapter:Verse" by simple regex
+            const refMatch = text.match(/([1-3]?\s?[A-Za-z]+)\s+\d+[:.]\d+/);
+            const firstLine = text.split(/\n/).map(s=>s.trim()).filter(Boolean)[0] || '';
+            el('dvRef').textContent = refMatch ? refMatch[0] : (firstLine.length>50 ? firstLine.slice(0,50)+'…' : firstLine);
+            // update saved count
+            updateVerseCounter();
+            observer.disconnect(); // run once per injection
+        });
+        observer.observe(target, {childList:true, subtree:true});
+
+        // In case the script already finished before observer was attached
+        if(target.childNodes.length) {
+            // small delay to let any rendering finalizes
+            setTimeout(()=> observer.takeRecords() && observer.disconnect() , 150);
+        }
+
+        // Background creation and animation
+        function createFloatingElements() {
+            const container = el('backgroundContainer');
+            const symbols = ['✝', '✞', '✟', '🙏', '🤲', '✨', '☦', '✠', '✙', '✚', '✛', '✜', '✢', '✣', '✤', '🕊', '📖', '✡'];
+            
+            // Create multiple floating elements
+            for (let i = 0; i < 15; i++) {
+                const element = document.createElement('div');
+                const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // Assign different classes based on symbol type
+                if (symbol === '🕊') {
+                    element.className = 'floating-dove';
+                } else if (symbol === '📖') {
+                    element.className = 'floating-bible';
+                } else {
+                    element.className = 'floating-cross';
+                }
+                
+                element.textContent = symbol;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.top = `${Math.random() * 100}%`;
+                element.style.animationDelay = `${Math.random() * 20}s`;
+                element.style.fontSize = `${20 + Math.random() * 20}px`;
+                
+                container.appendChild(element);
+            }
+        }
+
+        // Toggle background visibility
+        let backgroundVisible = true;
+        el('backgroundToggle').addEventListener('click', () => {
+            backgroundVisible = !backgroundVisible;
+            const container = el('backgroundContainer');
+            container.style.opacity = backgroundVisible ? '1' : '0';
+            el('backgroundToggle').textContent = backgroundVisible ? 'Hide Background' : 'Show Background';
+        });
+
+        // Initialize the background
+        createFloatingElements();
+    </script>
+</body>
+</html>
