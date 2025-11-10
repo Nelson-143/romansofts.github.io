@@ -10,6 +10,7 @@
             --bg:#f6f7fb; --card:#fff; --muted:#6b7280; --accent:#0ea5a4; --shadow:0 6px 18px rgba(16,24,40,0.08);
             --radius:12px; --gap:12px;
             --text-primary:#0f172a;
+            --visitor-percent: 0; /* Hidden visitor progress */
         }
         body {
             margin: 0;
@@ -62,7 +63,7 @@
         .dv-small{font-size:13px; color:var(--muted)}
         .dv-dark{
             --bg:#0b1220; --card:#071127; --muted:#9aa4b2; --accent:#7ee7db; 
-            --text-primary:#f1f5f9; /* Fixed text color for dark mode */
+            --text-primary:#f1f5f9;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: var(--muted);
         }
@@ -454,6 +455,155 @@
             background: rgba(126, 231, 219, 0.08);
         }
         
+        /* Saved Verses Section */
+        .saved-verses-section {
+            margin: 20px 0;
+            background: rgba(14, 165, 164, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .dv-dark .saved-verses-section {
+            background: rgba(126, 231, 219, 0.05);
+        }
+        
+        .saved-verses-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .saved-verses-toggle {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+        
+        .saved-verses-toggle.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .saved-verses-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .saved-verses-list.expanded {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .saved-verse-item {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--accent);
+            transition: all 0.2s ease;
+        }
+        
+        .dv-dark .saved-verse-item {
+            background: rgba(15, 23, 42, 0.7);
+        }
+        
+        .saved-verse-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .saved-verse-ref {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        
+        .saved-verse-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--text-primary);
+        }
+        
+        .saved-verse-date {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .no-saved-verses {
+            text-align: center;
+            color: var(--muted);
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        /* Flower Animation */
+        .flower {
+            position: fixed;
+            font-size: 24px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        /* Hidden Visitor Counter Styles */
+        .visitor-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--accent) 0%, 
+                var(--accent) calc(var(--visitor-percent) * 1%), 
+                transparent calc(var(--visitor-percent) * 1%), 
+                transparent 100%);
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        .secret-message {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 11px;
+            color: rgba(0,0,0,0.15);
+            font-family: monospace;
+            z-index: 0;
+            pointer-events: none;
+            user-select: none;
+            background: rgba(255,255,255,0.7);
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+        
+        .dv-dark .secret-message {
+            color: rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+        }
+        
+        @keyframes flowerFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
         @keyframes float {
             0% {
                 transform: translate(0, 0) rotate(0deg);
@@ -529,6 +679,14 @@
                 flex-direction: column;
                 gap: 5px;
             }
+            .saved-verse-text {
+                font-size: 13px;
+            }
+            .secret-message {
+                font-size: 9px;
+                bottom: 5px;
+                left: 5px;
+            }
         }
     </style>
 </head>
@@ -537,6 +695,10 @@
         <div class="light-ray"></div>
         <!-- Floating elements will be added here by JavaScript -->
     </div>
+    
+    <!-- Hidden Visitor Counter Elements -->
+    <div class="visitor-indicator" id="visitorIndicator"></div>
+    <div class="secret-message" id="secretMessage">number</div>
     
     <div class="motivation-container" id="motivationContainer">
         <span class="motivation-icon">🌟</span>
@@ -591,6 +753,17 @@
                     </button>
                 </div>
                 
+                <!-- Saved Verses Section -->
+                <div class="saved-verses-section">
+                    <div class="saved-verses-title" id="savedVersesToggle">
+                        <span>📖 Your Saved Verses (<span id="savedCountDisplay">0</span>)</span>
+                        <span class="saved-verses-toggle">▼</span>
+                    </div>
+                    <div class="saved-verses-list" id="savedVersesList">
+                        <!-- Saved verses will be populated here -->
+                    </div>
+                </div>
+                
                 <div class="progress-container">
                     <div class="progress-title">Your Spiritual Journey</div>
                     <div class="progress-bar">
@@ -625,14 +798,12 @@
                 <a href="https://nelson-143.github.io/romansofts.github.io/html/index.html" target="_blank" rel="noopener noreferrer" aria-label="ROMANSOFTS homepage" style="text-decoration:none;">
                     <div class="romansofts-logo" style="width:65px;height:65px;overflow:hidden;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:rgba(14,165,164,0.08);">
                         <!-- Fallback text if image doesn't load -->
-                         <img src="../assets/images/romn.jpg" alt="ROMANSOFTS logo" loading="lazy"
+                        <img src="../assets/images/romn.jpg" alt="ROMANSOFTS logo" loading="lazy"
      style="width:100%;height:100%;object-fit:contain;display:block;" />
-
-                        
                     </div>
                 </a>
                 <div>•</div>
-               
+              
             </div>
         </div>
     </div>
@@ -653,6 +824,54 @@
             t._timeout = setTimeout(()=> t.classList.remove('show'), 2200);
         };
 
+        // ========== HIDDEN VISITOR COUNTER ==========
+        const visitorKey = 'dv-hidden-visitor-count';
+        
+        function updateHiddenVisitorCount() {
+            let count = parseInt(localStorage.getItem(visitorKey) || '0');
+            count++;
+            localStorage.setItem(visitorKey, count.toString());
+            
+            updateEnhancedVisitorCount(count);
+        }
+        
+        function updateEnhancedVisitorCount(count) {
+            // Update progress bar based on count (resets every 1000 visitors)
+            const percent = (count % 1000) / 10;
+            document.documentElement.style.setProperty('--visitor-percent', percent);
+            
+            // Convert count to Roman numerals for the secret message
+            const romanCount = toRomanNumerals(count);
+            el('secretMessage').textContent = `number:${romanCount}`;
+            
+            // Hidden in console for debugging
+            updateConsoleHint(count);
+        }
+        
+        function toRomanNumerals(num) {
+            const roman = {
+                M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90,
+                L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1
+            };
+            let str = '';
+            for (let i of Object.keys(roman)) {
+                const q = Math.floor(num / roman[i]);
+                num -= q * roman[i];
+                str += i.repeat(q);
+            }
+            return str;
+        }
+        
+        function updateConsoleHint(count) {
+            if (count % 50 === 0) {
+                console.log(`%cVisitor Milestone: ${count}`, 
+                           'background: #0ea5a4; color: white; padding: 5px; border-radius: 3px;');
+            }
+        }
+        
+        // Initialize hidden counter
+        updateHiddenVisitorCount();
+
         // Read/Write favorites to localStorage
         const favoritesKey = 'dv-favorites-v1';
         const getFavorites = () => {
@@ -663,6 +882,7 @@
             f.unshift({text, ref, created:Date.now()});
             localStorage.setItem(favoritesKey, JSON.stringify(f.slice(0,50)));
             updateVerseCounter();
+            updateSavedVersesDisplay();
             el('dvSavedCount').textContent = `${f.length} saved`;
             
             // Show motivation when saving
@@ -675,6 +895,7 @@
         const updateVerseCounter = () => {
             const count = getFavorites().length;
             el('savedCount').textContent = count;
+            el('savedCountDisplay').textContent = count;
             el('dvSavedCount').textContent = `${count} saved`;
             
             // Animate the counter when it changes
@@ -685,8 +906,37 @@
             }, 300);
         };
 
-        // Initialize the verse counter
+        // Update saved verses display
+        const updateSavedVersesDisplay = () => {
+            const savedVersesList = el('savedVersesList');
+            const favorites = getFavorites();
+            
+            if (favorites.length === 0) {
+                savedVersesList.innerHTML = '<div class="no-saved-verses">No saved verses yet. Click "Save" to add verses to your collection!</div>';
+                return;
+            }
+            
+            savedVersesList.innerHTML = favorites.map((verse, index) => `
+                <div class="saved-verse-item">
+                    <div class="saved-verse-ref">${verse.ref || 'Bible Verse'}</div>
+                    <div class="saved-verse-text">${verse.text}</div>
+                    <div class="saved-verse-date">${new Date(verse.created).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        };
+
+        // Initialize the verse counter and saved verses display
         updateVerseCounter();
+        updateSavedVersesDisplay();
+
+        // Toggle saved verses section
+        el('savedVersesToggle').addEventListener('click', () => {
+            const list = el('savedVersesList');
+            const toggle = el('savedVersesToggle').querySelector('.saved-verses-toggle');
+            
+            list.classList.toggle('expanded');
+            toggle.classList.toggle('rotated');
+        });
 
         // Theme toggle - FIXED DARK MODE TEXT COLOR
         let isLarge = false;
@@ -919,6 +1169,28 @@
             }, 3000);
         };
         
+        // Flower celebration animation
+        const createFlowerCelebration = () => {
+            const flowers = ['🌸', '🌺', '🌻', '🌼', '🌷', '💮', '🏵️', '🥀', '🌹'];
+            const container = document.body;
+            
+            for (let i = 0; i < 25; i++) {
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+                flower.style.left = `${Math.random() * 100}vw`;
+                flower.style.fontSize = `${20 + Math.random() * 20}px`;
+                flower.style.animation = `flowerFall ${3 + Math.random() * 2}s forwards`;
+                flower.style.animationDelay = `${Math.random() * 0.5}s`;
+                
+                container.appendChild(flower);
+                
+                setTimeout(() => {
+                    flower.remove();
+                }, 5000);
+            }
+        };
+        
         // Confetti effect
         const createConfetti = () => {
             const colors = ['#0ea5a4', '#f59e0b', '#ef4444', '#8b5cf6', '#10b981'];
@@ -945,6 +1217,11 @@
             this.textContent = 'Reflection Completed! 🌟';
             this.style.backgroundColor = '#10b981';
             showAchievement('Deep Thinker!', 'You reflected on God\'s Word!');
+            
+            // Create beautiful flower celebration
+            createFlowerCelebration();
+            
+            // Also add some confetti for extra celebration
             createConfetti();
             
             // Disable after completion
