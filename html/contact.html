@@ -78,9 +78,14 @@ body.dark-mode .logo-dark {
                           class="img-fluid animate-spin">Projects</a>
                     </li>               
                     <li class="header-item">
-                      <a href="#" class="header-link hstack gap-2 fs-7 fw-bold text-dark"><img
+                      <a href="contact.html" class="header-link hstack gap-2 fs-7 fw-bold text-dark"><img
                           src="../assets/images/svgs/secondary-leaf.svg" alt="" width="20" height="20"
                           class="img-fluid animate-spin">Contact</a>
+                    </li>
+                      <li class="header-item">
+                      <a href="bible.html" class="header-link hstack gap-2 fs-7 fw-bold text-dark"><img
+                          src="../assets/images/svgs/secondary-leaf.svg" alt="" width="20" height="20"
+                          class="img-fluid animate-spin">verse of the day</a>
                     </li>
                   </ul>
                
@@ -136,7 +141,7 @@ body.dark-mode .logo-dark {
               <div class="d-flex align-items-center gap-7 py-2" data-aos="fade-right" data-aos-delay="100"
                 data-aos-duration="1000">
                 <span
-                  class="round-36 flex-shrink-0 text-dark rounded-circle bg-primary hstack justify-content-center fw-medium">10</span>
+                  class="round-36 flex-shrink-0 text-dark rounded-circle bg-primary hstack justify-content-center fw-medium">01</span>
                 <hr class="border-line bg-white">
                 <span class="badge text-bg-dark">Contact us</span>
               </div>
@@ -159,25 +164,49 @@ body.dark-mode .logo-dark {
                 ears.</p>
             </div>
             <div class="col-xl-8">
-              <form class="d-flex flex-column gap-7" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
-                <div>
-                  <input type="text" class="form-control border-bottom border-dark" id="formGroupExampleInput"
-                    placeholder="Name">
-                </div>
-                <div>
-                  <input type="email" class="form-control border-bottom border-dark" id="exampleInputEmail1"
-                    placeholder="Email" aria-describedby="emailHelp">
-                </div>
-                <div>
-                  <textarea class="form-control border-bottom border-dark" id="exampleFormControlTextarea1"
-                    placeholder="Tell us about your project" rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn w-100 justify-content-center">
-                  <span class="btn-text">Submit message</span>
-                  <iconify-icon icon="lucide:arrow-up-right"
-                    class="btn-icon bg-white text-dark round-52 rounded-circle hstack justify-content-center fs-7 shadow-sm"></iconify-icon>
-                </button>
-              </form>
+<form
+  action="https://formspree.io/f/xykkdrbo"
+  method="POST"
+  class="d-flex flex-column gap-7"
+  data-aos="fade-up"
+  data-aos-delay="200"
+  data-aos-duration="1000"
+>
+  <div>
+    <input type="text" name="name" class="form-control border-bottom border-dark"
+      placeholder="Name" required>
+  </div>
+
+  <div>
+    <input type="email" name="email" class="form-control border-bottom border-dark"
+      placeholder="Email" required>
+  </div>
+
+  <div>
+    <textarea name="message" class="form-control border-bottom border-dark"
+      placeholder="Tell us about your project" rows="3" required></textarea>
+  </div>
+
+  <!-- Email to YOU -->
+  <input type="hidden" name="_subject" value="New Contact – RomanSofts">
+
+  <!-- Auto-reply EMAIL to client (not shown on page) -->
+  <input type="hidden" name="_autoresponse"
+    value="Thank you for contacting RomanSofts. We’ve received your message and will get back to you shortly. — RomanSofts | Ideas into Impact">
+
+  <!-- What the USER sees after submit -->
+  <input type="hidden" name="_confirmation"
+    value="Thank you! Your message has been sent successfully.">
+
+  <button type="submit" class="btn w-100 justify-content-center">
+    <span class="btn-text">Submit message</span>
+    <iconify-icon icon="lucide:arrow-up-right"
+      class="btn-icon bg-white text-dark round-52 rounded-circle hstack justify-content-center fs-7 shadow-sm">
+    </iconify-icon>
+  </button>
+</form>
+
+
             </div>
           </div>
         </div>
@@ -207,7 +236,12 @@ body.dark-mode .logo-dark {
           </ul>
         </div>
         <div class="col-md-4 col-xl-3 mb-8 mb-xl-0">
-          <p class="mb-0 text-white text-opacity-70 text-md-end">© romansofts copyright 2025</p>
+<p class="mb-0 text-white text-opacity-70 text-md-end">
+    © RomanSofts <span id="year"></span> — All rights reserved
+</p>
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
         </div>
       </div>
     </div>
